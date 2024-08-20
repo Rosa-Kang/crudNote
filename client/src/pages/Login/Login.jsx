@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if(!validateEmail(email)){
@@ -18,7 +18,8 @@ const Login = () => {
     }
 
     if(!password){
-      setError("Please enter the password.")
+      setError("Please enter the password.");
+      return;
     }
 
     setError("")
@@ -43,7 +44,7 @@ const Login = () => {
 
             <PasswordInput
               value= {password}
-              onChange={(e) => {setPassword(e.target.value); console.log(error)}}
+              onChange={(e) => setPassword(e.target.value)}
              />
 
             {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
