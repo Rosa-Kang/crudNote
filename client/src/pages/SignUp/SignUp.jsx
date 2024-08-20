@@ -11,6 +11,25 @@ const SignUp = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    if(!name){
+      setError("Please enter the name.");
+      return;
+    }
+
+    if(!validateEmail(email)){
+      setError("Please enter a valid Email address.");
+      return;
+    }
+
+    if(!password){
+      setError("Please enter the password.");
+      return;
+    }
+
+    setError("");
+
+    // SignUp API call
   }
   return (
     <div>
@@ -26,7 +45,7 @@ const SignUp = () => {
               className="input-box" 
               placeholder='Name'
               value={name}
-              onChange={()=> setName(e.target.value)}
+              onChange={(e)=> setName(e.target.value)}
              />
 
             <input 
@@ -34,7 +53,7 @@ const SignUp = () => {
               className="input-box" 
               placeholder='Email'
               value={email}
-              onChange={()=> setEmail(e.target.value)}
+              onChange={(e)=> setEmail(e.target.value)}
              />
 
             <PasswordInput
