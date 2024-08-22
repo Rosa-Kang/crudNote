@@ -5,8 +5,6 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import helmet from 'helmet'
 import morgan from 'morgan'
-import jwk from 'jsonwebtoken';
-import { authenticateToken } from './utilities.js'
 
 /** COFIGURATION */ 
 dotenv.config();
@@ -18,6 +16,24 @@ app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
+
+/** JWT setup */ 
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+let secretKey = process.env.JWT_SECRET;
+
+if(!secretKey) {
+    secretKey = crypto.randomBytes(64).toString('hex');
+
+    const envFilePath = path.join(__dirname, '.env');
+    fs.appendFileSync(envFilePath, `\nJWT_SECRET=${secretKey}\n`);
+    console.log("Generated new JWT secret key and saved to .env file.")
+}
 
 /** ROUTES */
 
