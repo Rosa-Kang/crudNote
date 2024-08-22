@@ -5,6 +5,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import helmet from 'helmet'
 import morgan from 'morgan'
+import jwk from 'jsonwebtoken';
+import { authenticateToken } from './utilities.js'
 
 /** COFIGURATION */ 
 dotenv.config();
@@ -21,9 +23,6 @@ app.use(cors());
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;
-mongoose.connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(()=> {
-    app.listen(PORT, () => console.log(`Server Port: ${PORT}`))
+mongoose.connect(process.env.MONGO_URL, {}).then(()=> {
+    app.listen(PORT, () => console.log(`Server Running on Port:  ${PORT} !!`))
 }).catch((error) => console.log(`${error} did not connect`))
