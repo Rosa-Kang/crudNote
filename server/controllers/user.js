@@ -47,3 +47,20 @@ export const signin = async (req, res) => {
         res.status(500).json({message : "Something went wrong."})
     }
 }
+
+export const getUser = async(req, res)=> {
+  const { user } = req.user;
+  const isUser = await User.findOne({_id: user._id});
+
+  if(!isUser) return res.sendStats(404);
+
+  return res.json({
+    user: {
+      fullName: isUser.fullName,
+      email: isUser.email,
+      _id: isUser._id,
+      createdOn: isUser.createdOn
+    },
+    message: ""
+  });
+}
