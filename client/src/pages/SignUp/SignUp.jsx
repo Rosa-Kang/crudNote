@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import Navbar from '../../components/Navbar/Navbar'
 import PasswordInput from '../../components/Input/PasswordInput';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import API from '../../api/index'
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const navigate = useNavigate()
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -30,6 +32,29 @@ const SignUp = () => {
     setError("");
 
     // SignUp API call
+    try {
+      const response = await API.post("/signup", {
+        FullName : name,
+        email: email,
+        password: password,
+      });
+
+      if(response.data && response.data.error) {
+        setError(response.data.message)
+        return
+      }
+
+      if(response.data && response.data.accessToken){
+        localStorage.setItem("token", response.data.accessToken)
+        Navigate('/');
+      }
+    } catch (error) {
+      if(error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("An unexpected error occrred. Please try again.")
+      }
+    }
   }
   return (
     <div>
