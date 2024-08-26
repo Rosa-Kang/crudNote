@@ -6,6 +6,9 @@ import dotenv from 'dotenv'
 import helmet from 'helmet'
 import morgan from 'morgan'
 
+import noteRoutes from './routes/notes.js';
+import userRoutes from "./routes/users.js";
+
 /** COFIGURATION */ 
 dotenv.config();
 const app = express();
@@ -36,6 +39,11 @@ if(!secretKey) {
 }
 
 /** ROUTES */
+app.use('/notes', noteRoutes);
+app.use('/user', userRoutes);
+app.get('/', (req, res) => {
+    res.send('Welcome to Flymango API!');
+});
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;

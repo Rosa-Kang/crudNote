@@ -1,9 +1,12 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/User";
+import User from "../models/User.js";
+
+const secret = process.env.JWT_SECRET
 
 export const signup = async (req, res) => {
     const { email, password, fullName } = req.body;
+    console.log('Signup route hit'); 
 
     try {
       const oldUser = await User.findOne({ email });
