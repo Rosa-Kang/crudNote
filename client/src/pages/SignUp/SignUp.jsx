@@ -3,13 +3,14 @@ import Navbar from '../../components/Navbar/Navbar'
 import PasswordInput from '../../components/Input/PasswordInput';
 import { Link, useNavigate } from 'react-router-dom';
 import API from '../../api/index'
+import { validateEmail } from '../../utils/helper';
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate(); 
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -33,8 +34,9 @@ const SignUp = () => {
 
     // SignUp API call
     try {
-      const response = await API.post("/signup", {
-        FullName : name,
+      console.log(name, email, password); // 요청 내용 확인
+      const response = await API.post("/user/signup", {
+        fullName : name,
         email: email,
         password: password,
       });
@@ -46,13 +48,13 @@ const SignUp = () => {
 
       if(response.data && response.data.accessToken){
         localStorage.setItem("token", response.data.accessToken)
-        Navigate('/');
+        navigate('/');
       }
     } catch (error) {
       if(error.response && error.response.data && error.response.data.message) {
         setError(error.response.data.message);
       } else {
-        setError("An unexpected error occrred. Please try again.")
+        setError("An unexpected error occured. Please try again.")
       }
     }
   }

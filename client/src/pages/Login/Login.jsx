@@ -42,7 +42,7 @@ const Login = () => {
     if(error.response && error.response.data && error.response.data.message) {
       setError(error.response.data.message);
     } else {
-      setError("An unexpected error occrred. Please try again.")
+      setError("An unexpected error occured. Please try again.")
     }
   }
   }
