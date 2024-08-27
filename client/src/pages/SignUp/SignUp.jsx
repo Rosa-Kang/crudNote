@@ -34,8 +34,7 @@ const SignUp = () => {
 
     // SignUp API call
     try {
-      console.log(name, email, password); // 요청 내용 확인
-      const response = await API.post("/user/signup", {
+      const response = await API.post("/users/signup", {
         fullName : name,
         email: email,
         password: password,
@@ -46,8 +45,8 @@ const SignUp = () => {
         return
       }
 
-      if(response.data && response.data.accessToken){
-        localStorage.setItem("token", response.data.accessToken)
+      if(response.data && response.data.token){
+        localStorage.setItem("token", response.data.token)
         navigate('/');
       }
     } catch (error) {

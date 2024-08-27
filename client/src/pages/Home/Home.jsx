@@ -20,7 +20,7 @@ const Home = () => {
 
   const getUserInfo = async() => {
     try {
-      const response = await API.get("/get-user");
+      const response = await API.get("/user/get-user");
       if(response.data && response.data.user) {
         setUserInfo(response.data.user);
       }

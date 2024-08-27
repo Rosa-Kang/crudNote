@@ -2,10 +2,10 @@ import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema(
     {
-        fullName: { type: String },
-        email: { type: String },
-        password: { type: String },
-        screateOn: { type: Date, default: new Date().getTime() }
+        fullName: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+        ccreatedOn: { type: Date, default: new Date().getTime() }
     }
 );
 

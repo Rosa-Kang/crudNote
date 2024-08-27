@@ -29,13 +29,13 @@ const Login = () => {
 
     // Login API Call
   try {
-    const response = await API.post("/login", {
+    const response = await API.post("/users/signin", {
       email : email,
       password: password,
     });
 
-    if(response.data && response.data.accessToken) {
-      localStorage.setItem("token", response.data.accessToken);
+    if(response.data && response.data.token) {
+      localStorage.setItem("token", response.data.token);
       navigate("/")
     }
   } catch (error) {
