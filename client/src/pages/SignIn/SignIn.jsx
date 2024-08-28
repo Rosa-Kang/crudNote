@@ -5,7 +5,7 @@ import { Link , useNavigate } from 'react-router-dom';
 import { validateEmail } from '../../utils/helper';
 import API from '../../api';
 
-const Login = () => {
+const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -29,7 +29,7 @@ const Login = () => {
 
     // Login API Call
   try {
-    const response = await API.post("/users/signin", {
+    const response = await API.post("/user/signin", {
       email : email,
       password: password,
     });
@@ -87,4 +87,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default SignIn

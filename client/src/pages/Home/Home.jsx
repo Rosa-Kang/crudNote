@@ -27,7 +27,9 @@ const Home = () => {
     } catch (error) {
       if(error.response.status === 404) {
         localStorage.clear();
-        navigate("/login");
+        navigate("/signin");
+      } else {
+        console.error("Error fetching user data:", error.response ? error.response.data : error.message);
       }
     }
   }

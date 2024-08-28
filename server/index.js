@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
@@ -24,7 +23,7 @@ import noteRoutes from './routes/notes.js';
 import userRoutes from "./routes/users.js";
 
 app.use('/notes', noteRoutes);
-app.use('/users', userRoutes);
+app.use('/user', userRoutes);
 app.get('/', (req, res) => {
     res.send('Welcome to 2025-MERN API!');
 });

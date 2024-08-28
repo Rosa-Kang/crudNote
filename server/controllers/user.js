@@ -1,84 +1,69 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
 import User from "../models/User.js";
 
 
-const secret = process.env.JWT_SECRET || 'default_secret_key';
-
-if (!process.env.JWT_SECRET) {
-    console.warn("Warning: JWT_SECRET is not defined. Using default key.");
-}
+const secret = 'test';
 
 export const signup = async (req, res) => {
     const { email, password, fullName } = req.body;
-    console.log('Signup route hit'); 
 
     try {
-    const oldUser = await User.findOne({ email });
-    if (oldUser) return res.status(404).json({message: "User already exists."});
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const result = new User({
-        fullName,
+      const userInfo = await User.findOne({ email });
+  
+      if (userInfo)
+        return res.status(400).json({ message: "User already exists" });
+  
+      const hashedPassword = await bcrypt.hash(password, 12);
+  
+      const result = await User.create({
         email,
         password: hashedPassword,
-    });
-
-    await result.save();
-
-    const token = jwt.sign({ id: result._id, email: result.email }, secret, {
+        fullName,
+      });
+  
+      const token = jwt.sign({ email: result.email, id: result._id }, secret, {
         expiresIn: "1h",
-    });
-
-    res.status(201).json({ error: false, result, token, message: "Registration Succeed." });       
-
+      });
+  
+      res.status(201).json({ result, token });
     } catch (error) {
-        res.status(500).json({message: "Something went wrong."});
-        console.log(error);
+      res.status(500).json({ message: "Something went wrong" });
+  
+      console.log(error);
     }
 }
 
 export const signin = async (req, res) => {
-    const {email, password} = req.body;
+    const { email, password}  = req.body;
 
     try {
-    const oldUser = await User.findOne({ email });
-    if(!oldUser) return res.status(400).json({message: "User doesn't exist"});
+    const userInfo = await User.findOne({ email });
+    if(!userInfo) return res.status(400).json({message: "User doesn't exist"});
 
-    const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
+    const isPasswordCorrect = await bcrypt.compare(password, userInfo.password);
     if(!isPasswordCorrect) return res.status(400).json({message: "Invalid credentials."})
 
-    const token = jwt.sign({ id: oldUser._id, email: oldUser.email }, secret, {
+    const token = jwt.sign({ id: userInfo._id, email: userInfo.email }, secret, {
             expiresIn: "1h",
         });
 
-    res.status(201).json({ oldUser, token });      
+    res.status(201).json({ result: userInfo, token });      
     } catch (error) {
         res.status(500).json({message : "Something went wrong."})
     }
 }
 
-export const getUser = async(req, res)=> {
-    const userId = req.user?.id;
+export const getUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
 
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    try {
-        const isUser = await User.findOne({ _id: userId });
-
-        if (!isUser) return res.sendStatus(404);
-
-        return res.json({
-            user: {
-                fullName: isUser.fullName,
-                email: isUser.email,
-                _id: isUser._id,
-                createdOn: isUser.createdOn
-            },
-            message: ""
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Something went wrong." });
-    }
-}
+    res.status(200).json({ user });
+  } catch (error) {
+      res.status(500).json({ message: "Something went wrong." });
+  }
+};

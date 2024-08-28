@@ -6,7 +6,7 @@ const noteSchema = new mongoose.Schema({
     tags: { type: [String], default: [] },
     inPinned: { type: Boolean, default: false },
     userId: { type:String, required: true },
-    createdOn: { type: Date, default: new Date().getTime() }
+    createdAt: { type: Date, default: new Date().getTime() }
 });
 
 const Note = mongoose.model('Note', noteSchema );
