@@ -7,6 +7,7 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
   const [title, setTitle] = useState( noteData?.title || "");
   const [content, setContent] = useState(noteData?.content || "");
   const [tags, setTags] = useState(noteData?.tags ||[]);
+  const [loading, setLoading] = useState(false);
   
   const [error, setError] = useState(null);
 
@@ -69,12 +70,16 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
       return;
     }
 
+    setLoading(true);
     setError("");
 
-    if(type === 'edit') {
+    try {if(type === 'edit') {
       editNote();
     } else {
       addNewNote();
+    }} catch(error) {
+      console.error("Error handling note:", error);
+      setLoading(false);
     }
   }
 
