@@ -47,10 +47,13 @@ export const editNote = async (req, res) => {
     if(title) note.title = title;
     if(content) note.content = content;
     if(tags) note.tags = tags;
-    if (typeof isPinned !== 'undefined') note.isPinned = isPinned;
+    if(isPinned) note.isPinned = isPinned;
+    if (typeof isPinned !== 'undefined') note.isPinned = isPinned; // Handle boolean values
 
     await note.save();
+    // Respond with the updated note data
     return res.status(200).json({ success: true, message: "Note updated successfully.", note });
+
   } catch (error) {
     return res.status(500).json('Internal Server Error')
   }
