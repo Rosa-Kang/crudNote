@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import TagInput from './TagInput'
 import { MdClose } from 'react-icons/md';
+import API from '../../api';
 
-const AddEditNotes = ({ noteData, type, onClose }) => {
+const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
@@ -11,7 +12,25 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
 
   // Add Note
   const addNewNote = async(e) => {
+      try {
+        const response = await API.post("/notes/add-note", {
+          title,
+          content,
+          tags
+        });
 
+        if(response.data && response.data.notes){
+          getAllNotes();
+          onClose();
+        }
+      
+      } catch (error) {
+        if(error.message) {
+          setError(error.message.data.message);
+        } else {
+          console.error("Error fetching user data:", error.response ? error.response.data : error.message);
+        }
+      }
   }
 
   // Edit Note

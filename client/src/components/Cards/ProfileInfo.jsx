@@ -11,7 +11,7 @@ const ProfileInfo = ({userInfo, onLogout}) => {
     
     <div>
         <p className='text-sm font-medium'>{userInfo?.fullName}</p>
-        <button className="text-sm text-slate-700 uunderline" onClick={onLogout}>Logout</button>
+        <button className="text-sm text-slate-700 uunderline" onClick={onLogout}>{userInfo? "Logout" : "Login"}</button>
     </div>
    </div>
   )

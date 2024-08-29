@@ -23,7 +23,7 @@ export const addNote = async (req, res) => {
             content,
             tags: tags || [],
             isPinned,
-            userId:user._id
+            userId:req.userId
         })
         await newNote.save();
 

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar/Navbar'
 import NoteCard from '../../components/Cards/NoteCard';
-import API from '../../api/index'
+import API from '../../api/index';
+import moment from 'moment';
 
 import { MdAdd } from 'react-icons/md'
 import AddEditNotes from './AddEditNotes';
@@ -16,6 +17,7 @@ const Home = () => {
   });
 
   const [userInfo, setUserInfo] = useState(null);
+  const [allNotes, setAllNotes] = useState([]);
   const navigate = useNavigate();
 
   const getUserInfo = async() => {
@@ -25,7 +27,7 @@ const Home = () => {
         setUserInfo(response.data.user);
       }
     } catch (error) {
-      if(error.response.status === 404) {
+      if(response.status === 404) {
         localStorage.clear();
         navigate("/signin");
       } else {
@@ -34,8 +36,20 @@ const Home = () => {
     }
   }
 
+  const getAllNotes = async() => {
+    try {
+      const response = await API.get("/notes/get-all-notes");
+      if(response.data) {
+        setAllNotes(response.data)
+      }
+    } catch (error) {
+        console.log("An unexpected error occured. Please try again.")
+    }
+  }
+
   useEffect(() => {
     getUserInfo();
+    getAllNotes();
   
     return () => {
       
@@ -49,16 +63,20 @@ const Home = () => {
 
      <div className="container mx-auto">
       <div className="grid grid-cols-3 gap-4 mt-8">
-        <NoteCard 
-          title = "Meeting on 7th April"
-          date = "3rd Apr 2024"
-          content = "Meeting on 7th April"
-          tags = "#Meeting"
+        {allNotes.map((item, index) => (
+          <NoteCard 
+          key={item._id}
+          title = {item.title}
+          date = {item.createdAt}
+          content = {item.content}
+          tags = {item.tags}
           isPinned ={true}
           onEdit ={()=> {}} 
           onDelete ={()=> {}}
           onPinNote ={()=> {}}
         />
+        ))}
+        
       </div>
       
       <button 
@@ -88,6 +106,7 @@ const Home = () => {
           type={openAddEditModal.type}
           noteData={openAddEditModal.data}
           onClose={() => setOpenAddEditModal({ isShown: false, type: "add", data: null})} 
+          getAllNotes={getAllNotes}
          />
       </Modal>
 
