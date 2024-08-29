@@ -20,6 +20,10 @@ const Home = () => {
   const [allNotes, setAllNotes] = useState([]);
   const navigate = useNavigate();
 
+  const handleEdit= (noteDetails) => {
+    setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit"});
+  }
+
   const getUserInfo = async() => {
     try {
       const response = await API.get("/user/get-user");
@@ -27,7 +31,7 @@ const Home = () => {
         setUserInfo(response.data.user);
       }
     } catch (error) {
-      if(response.status === 404) {
+      if(error.response && error.response.status === 404) {
         localStorage.clear();
         navigate("/signin");
       } else {
@@ -71,7 +75,7 @@ const Home = () => {
           content = {item.content}
           tags = {item.tags}
           isPinned ={true}
-          onEdit ={()=> {}} 
+          onEdit ={()=> handleEdit(item)} 
           onDelete ={()=> {}}
           onPinNote ={()=> {}}
         />

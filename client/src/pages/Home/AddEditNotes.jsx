@@ -4,9 +4,9 @@ import { MdClose } from 'react-icons/md';
 import API from '../../api';
 
 const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [tags, setTags] = useState([]);
+  const [title, setTitle] = useState( noteData?.title || "");
+  const [content, setContent] = useState(noteData?.content || "");
+  const [tags, setTags] = useState(noteData?.tags ||[]);
   
   const [error, setError] = useState(null);
 
@@ -25,17 +25,37 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
         }
       
       } catch (error) {
-        if(error.message) {
-          setError(error.message.data.message);
+        if (error.response && error.response.data) {
+          setError(error.response.data.message || 'An error occurred while editing the note.');
         } else {
-          console.error("Error fetching user data:", error.response ? error.response.data : error.message);
+          setError('An error occurred: ' + (error.message || 'Unknown error'));
         }
+        console.error("Error editing note:", error);
       }
   }
 
   // Edit Note
   const editNote = async(e) => {
+    const noteId = noteData._id
+    try {
+      const response = await API.put("/notes/edit-note/" + noteId, {
+        title, 
+        content,
+        tags
+      });
 
+      if (response.status === 200 || response.status === 204) {
+        getAllNotes();
+        onClose();
+      } else {
+        setError("Failed to update the note.");
+      }
+      
+    } catch (error) {
+      if(error.message) {
+        setError(error.message.data)
+      }
+    }
   }
 
   const handleAddNote =()=> {
@@ -95,7 +115,9 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
 
       {error && <p className='text-red-500 text-xs pt-4'>{error}</p>}
 
-      <button className="btn-primary font-medium mt-5 p-3" onClick={handleAddNote}>ADD</button>
+      <button className="btn-primary font-medium mt-5 p-3" onClick={handleAddNote}>
+        {type === 'edit' ? 'UPDATE' : 'ADD'}
+      </button>
     </div>
   )
 }

@@ -34,12 +34,13 @@ export const addNote = async (req, res) => {
 }
 
 export const editNote = async (req, res) => {
-    const noteId = req.params.noteId;
+    const userId = req.userId;
+    const { noteId } = req.params;
     const { title, content, tags, isPinned } = req.body;
-    const { user } = req.user;
+
 
   try {
-    const note = await Note.findOne({ _id: noteId, userId: user._id });
+    const note = await Note.findOne({ _id: noteId, userId });
 
     if(!note) return res.status(404).json({ error: true, message: "Note not found."});
 
