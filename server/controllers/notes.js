@@ -77,7 +77,7 @@ export const deleteNote = async(req, res) => {
 }
 
 export const searchNote = async(req, res) => {
-    const { user } = req.user;
+    const userId = req.userId;
     const { query } = req.query;
 
     if(!query) {
@@ -88,7 +88,7 @@ export const searchNote = async(req, res) => {
 
     try {
         const matchingNotes = await Note.find({
-            userId: user._id,
+            userId: userId,
             $or: [
                 {title: { $regex: new RegExp(query, "i") } },
                 {content: { $regex: new RegExp(query, "i") } }

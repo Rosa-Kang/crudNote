@@ -26,6 +26,8 @@ const Home = () => {
 
   const [userInfo, setUserInfo] = useState(null);
   const [allNotes, setAllNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isSearch, setIsSearch] = useState(false)
   const navigate = useNavigate();
 
   const showToastMessage = (message, type) => {
@@ -70,7 +72,6 @@ const Home = () => {
       if(error.response && error.response.status === 404) {
         localStorage.clear();
         navigate("/signin");
-      } else {
         console.error("Error fetching user data:", error.response?.data || error.message);
       }
     }
@@ -79,18 +80,43 @@ const Home = () => {
 // Get all notes
   const getAllNotes = async() => {
     try {
+      setLoading(true)
       const response = await API.get("/notes/get-all-notes");
       if(response.data) {
         setAllNotes(response.data)
       }
     } catch (error) {
         console.log("An unexpected error occured. Please try again.")
+    } finally {
+      setLoading(false)
     }
+  }
+
+  // Search for a note
+  const onSearchNote = async (query) => {
+    try {
+      const response = await API.get("/notes/search-notes", {
+        params: { query },
+      });
+
+      if(response.data && response.data.notes) {
+        setIsSearch(true);
+        setAllNotes(response.data.notes);
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleClearSearch = () => {
+      setIsSearch(false);
+      getAllNotes();
   }
 
   useEffect(() => {
     getUserInfo();
     getAllNotes();
+    handleClearSearch();
   
     return () => {
       
@@ -98,12 +124,25 @@ const Home = () => {
   }, [])
   
 
+  const handleAddButtonClick =() => {
+    if(userInfo) {
+      setOpenAddEditModal({
+        isShown: true, type: "add", data: null
+      })
+    } else {
+      showToastMessage("Please log in to add a note.", 'warning')
+    }
+  }
+
   return (
     <>
-     <Navbar userInfo={userInfo} />
+     <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
 
      <div className="container mx-auto">
-      {allNotes.length > 0 ? (
+     {loading ? (
+          <p>Loading...</p> 
+        ) : 
+      allNotes.length > 0 ? (
         <div className="grid grid-cols-3 gap-4 mt-8">
           {allNotes.map((item, index) => (
             <NoteCard 
@@ -122,16 +161,13 @@ const Home = () => {
       ) : (
         <EmptyCard imgSrc={addNotesImg} message={`Start creating your first noet! Click 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`} />
       )}
-      <button 
-        className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10"
-        onClick={() => {
-          setOpenAddEditModal({
-            isShown: true, type: "add", data: null
-          })
-        }}
-      >
+
+        <button 
+          className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10"
+          onClick={handleAddButtonClick}
+        >
           <MdAdd className="text-[32px] text-white" />
-      </button>
+        </button>
 
       <Modal
         ariaHideApp={false}

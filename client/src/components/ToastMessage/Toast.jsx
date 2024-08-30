@@ -14,7 +14,7 @@ export const Toast = ({ isShown, message, type, onClose }) => {
   }, [onClose])
 
   return (
-    <div className={`absolute top-20 right-6 transition-all duration-400 
+    <div className={`absolute  transition-all duration-400 ${ type === 'warning' ? "bottom-[35%] right-[45%]" : "top-20 right-6" }
     ${ isShown ? "opacity-100":"opacity-0" }`}>
         <div className={`min-w-52 bg-white border shadow-2xl rounded-md after:w-[5px] after:h-full
         ${type === "delete" ? "after:bg-red-500" : "after:bg-green-500"} after:absolute after:left-0 after:top-0 after:rounded-l-lg`}>
