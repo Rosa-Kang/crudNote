@@ -3,7 +3,7 @@ import TagInput from './TagInput'
 import { MdClose } from 'react-icons/md';
 import API from '../../api';
 
-const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
+const AddEditNotes = ({ noteData, getAllNotes, type, onClose, showToastMessage }) => {
   const [title, setTitle] = useState( noteData?.title || "");
   const [content, setContent] = useState(noteData?.content || "");
   const [tags, setTags] = useState(noteData?.tags ||[]);
@@ -22,6 +22,7 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
         if (response.status === 200 || response.status === 204) {
           getAllNotes();
           onClose();
+          showToastMessage("Note added successfully!");
         }
       
       } catch (error) {
@@ -48,6 +49,7 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
       if (response.status === 200 || response.status === 204) {
         getAllNotes();
         onClose();
+        showToastMessage("Note updated successfully!");
       } else {
         setError("Failed to update the note.");
       }
