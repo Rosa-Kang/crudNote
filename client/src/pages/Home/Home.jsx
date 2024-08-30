@@ -24,6 +24,26 @@ const Home = () => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit"});
   }
 
+  const handleDelete = async() => {
+    const noteId = noteData._id
+    try {
+      const response = await API.delete("/notes/delete-note/:" + noteId);
+
+      // Fix to the modal close and update the new note
+      if (response.status === 200 || response.status === 204) {
+        getAllNotes();
+        onClose();
+      } else {
+        setError("Failed to delete the note.");
+      }
+      
+    } catch (error) {
+      if(error.message) {
+        setError(error.message.data)
+      }
+    }
+  }
+
   const getUserInfo = async() => {
     try {
       const response = await API.get("/user/get-user");
@@ -76,7 +96,7 @@ const Home = () => {
           tags = {item.tags}
           isPinned ={true}
           onEdit ={()=> handleEdit(item)} 
-          onDelete ={()=> {}}
+          onDelete ={()=> handleDelete(item)}
           onPinNote ={()=> {}}
         />
         ))}

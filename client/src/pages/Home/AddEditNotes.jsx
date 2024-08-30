@@ -7,7 +7,6 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
   const [title, setTitle] = useState( noteData?.title || "");
   const [content, setContent] = useState(noteData?.content || "");
   const [tags, setTags] = useState(noteData?.tags ||[]);
-  // const [loading, setLoading] = useState(false);
   
   const [error, setError] = useState(null);
 
@@ -20,7 +19,7 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
           tags
         });
 
-        if(response.data && response.data.notes){
+        if (response.status === 200 || response.status === 204) {
           getAllNotes();
           onClose();
         }
@@ -45,6 +44,7 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
         tags
       });
 
+      // Fix to the modal close and update the new note
       if (response.status === 200 || response.status === 204) {
         getAllNotes();
         onClose();
@@ -69,8 +69,6 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
       setError("Please enter the content.");
       return;
     }
-
-    // setLoading(true);
     setError("");
 
     try {if(type === 'edit') {
@@ -79,7 +77,6 @@ const AddEditNotes = ({ noteData, getAllNotes, type, onClose }) => {
       addNewNote();
     }} catch(error) {
       console.error("Error handling note:", error);
-      // setLoading(false);
     }
   }
 

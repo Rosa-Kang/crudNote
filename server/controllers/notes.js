@@ -60,15 +60,15 @@ export const editNote = async (req, res) => {
 }
 
 export const deleteNote = async(req, res) => {
-    const noteId = req.params.noteId;
-    const { user }= req.user;
+    const userId = req.userId;
+    const { noteId } = req.params;
 
     try {
-        const note = await Note.findOne({ _id: noteId, userId: user._id });
+        const note = await Note.findOne({ _id: noteId, userId: userId });
 
         if(!note) return res.status(404).json({ message: 'Note not found.'});
 
-        await Note.deleteOne({ _id: noteId, userId: user._id });
+        await Note.deleteOne({ _id: noteId, userId: userId });
         return res.json({message : 'Note deleted successfully.'});
 
     } catch (error) {
