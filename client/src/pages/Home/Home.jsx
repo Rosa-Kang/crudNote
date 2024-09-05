@@ -9,7 +9,8 @@ import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import { Toast } from '../../components/ToastMessage/Toast';
 import { EmptyCard } from '../../components/EmptyCard/EmptyCard';
-import addNotesImg from '../../assets/create-note.png'
+import addNotesImg from '../../assets/create-note.png';
+import noDataImg from '../../assets/no-data.png';
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -27,7 +28,8 @@ const Home = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [allNotes, setAllNotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isSearch, setIsSearch] = useState(false)
+  const [isSearch, setIsSearch] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
   const navigate = useNavigate();
 
   const showToastMessage = (message, type) => {
@@ -73,8 +75,10 @@ const Home = () => {
   const getUserInfo = async() => {
     try {
       const response = await API.get("/user/get-user");
-      if(response.data && response.data.user) {
+      if(response.data?.user) {
         setUserInfo(response.data.user);
+      } else {
+        setUserInfo(null)
       }
     } catch (error) {
       if(error.response && error.response.status === 404) {
@@ -102,22 +106,43 @@ const Home = () => {
 
   // Search for a note
   const onSearchNote = async (query) => {
+    setIsSearch(true);
     try {
       const response = await API.get("/notes/search-notes", {
         params: { query },
       });
 
-      if(response.data && response.data.notes) {
-        setIsSearch(true);
-        setAllNotes(response.data.notes);
+      if(response.data.length === 0) {
+          setAllNotes([]);
+        }
+      else {
+          setAllNotes(response.data.notes); 
+        } 
       }
-    } catch (error) {
+        catch (error) {
       console.log(error)
     }
   }
 
+  // isPinned
+  const updateIsPinned = async(noteData) => {
+      const noteId = noteData._id;
+      try {
+        const response = await API.put(`/notes/update-note-pinned/${noteId}` + {
+          "isPInned" : !noteId.isPinned,
+        });
+
+        if(response.data && response.data.note) {
+          showToastMessage("Note Updated Successfully.");
+          getAllNotes();
+        }
+      } catch (error) {
+        console.log(error);
+        
+      }
+  }
+
   const handleClearSearch = () => {
-      setIsSearch(false);
       getAllNotes();
   }
 
@@ -151,7 +176,7 @@ const Home = () => {
           <p>Loading...</p> 
         ) : 
       allNotes.length > 0 ? (
-        <div className="grid grid-cols-3 gap-4 mt-8">
+        <div className="grid grid-cols-3 gap-4 my-8 mx-6">
           {allNotes.map((item, index) => (
             <NoteCard 
             key={item._id}
@@ -159,15 +184,17 @@ const Home = () => {
             date = {item.createdAt}
             content = {item.content}
             tags = {item.tags}
-            isPinned ={true}
+            isPinned ={isPinned}
             onEdit ={()=> handleEdit(item)} 
             onDelete ={()=> handleDelete(item)}
-            onPinNote ={()=> {}}
+            onPinNote ={()=> updateIsPinned(item)}
           />
           ))}
         </div>
       ) : (
-        <EmptyCard imgSrc={addNotesImg} message={`Start creating your first noet! Click 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`} />
+        <button onClick={handleAddButtonClick} className='flex items-center justify-center w-full'>
+          <EmptyCard imgSrc={isSearch ? noDataImg : addNotesImg} message={isSearch? `Oops! No notes found marching your search.` : `Start creating your first noet! Click 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`} />
+        </button>
       )}
 
         <button 

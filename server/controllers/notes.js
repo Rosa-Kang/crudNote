@@ -77,7 +77,6 @@ export const deleteNote = async(req, res) => {
 }
 
 export const searchNote = async(req, res) => {
-    const userId = req.userId;
     const { query } = req.query;
 
     if(!query) {
@@ -88,18 +87,19 @@ export const searchNote = async(req, res) => {
 
     try {
         const matchingNotes = await Note.find({
-            userId: userId,
-            $or: [
-                {title: { $regex: new RegExp(query, "i") } },
-                {content: { $regex: new RegExp(query, "i") } }
-            ]
+             title: { $regex: query, $options: "i" },
+             content: { $regex: query, $options: "i" }
         });
-
-        return res.status(200).json({
-            error: false,
-            notes: matchingNotes,
-            message: "Notes matching the search query retrieved successfully."
-        })
+        if(matchingNotes.length > 0) {
+            return res.status(200).json({
+                    error: false,
+                    notes: matchingNotes,
+                    message: "Notes matching the search query retrieved successfully."
+                })
+        } else {
+            return res.send(matchingNotes)
+        }
+        
 
     } catch (error) {
         return res.status(500).json({
@@ -110,8 +110,8 @@ export const searchNote = async(req, res) => {
 }
 
 export const updateIsPinned = async(req, res)=> {
-    const { noteId } = req.params;
     const { isPinned } = req.body;
+    const { noteId } = req.params;
     const userId = req.userId;
 
     try {

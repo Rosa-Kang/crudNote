@@ -10,7 +10,7 @@ const NoteCard = ({
       isPinned,
       onEdit, 
       onDelete,
-      onPinNote
+      onPinNote,
  }) => {
   return (
     <div className='border rounded p-4 bg-white hover:shadow-xl transition-all ease-in-out'>
