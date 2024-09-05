@@ -39,25 +39,33 @@ const Home = () => {
   }
 
   const handleEdit= (noteDetails) => {
-    setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit"});
+    if(userInfo && userInfo._id === noteDetails.userId) {
+      setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit"})
+    } else {
+      showToastMessage("This note is not yours. Please login or try to edit your note.", 'warning')
+    }
   }
 
 // Delete Note
   const handleDelete = async(noteDetails) => {
-    const noteId = noteDetails._id
-    try {
-      const response = await API.delete(`/notes/delete-note/${noteId}`);
-
-      // Fix to the modal close and update the new note
-      if (response.status === 200 || response.status === 204) {
-        showToastMessage("Note Deleted Successfully!", 'delete')
-        getAllNotes();
+    if(userInfo && userInfo._id === noteDetails.userId) {
+      const noteId = noteDetails._id
+      try {
+        const response = await API.delete(`/notes/delete-note/${noteId}`);
+  
+        // Fix to the modal close and update the new note
+        if (response.status === 200 || response.status === 204) {
+          showToastMessage("Note Deleted Successfully!", 'delete')
+          getAllNotes();
+        }
+        
+      } catch (error) {
+        if(error.message) {
+          console.error("Fail to Delete:", error.response?.data || error.message)
+        }
       }
-      
-    } catch (error) {
-      if(error.message) {
-        console.error("Fail to Delete:", error.response?.data || error.message)
-      }
+    } else {
+      showToastMessage("This note is not yours. Please login or try to delete your note.", 'warning')
     }
   }
 
