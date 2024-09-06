@@ -112,14 +112,12 @@ export const searchNote = async(req, res) => {
 export const updateIsPinned = async(req, res)=> {
     const { isPinned } = req.body;
     const { noteId } = req.params;
-    const userId = req.userId;
 
     try {
-        const note = await Note.findOne({ _id: noteId, userId: userId });
-
+        const note = await Note.findOne({ _id: noteId });
         if(!note) return res.status(400).json({message: "Note not found"});
-
         note.isPinned = isPinned;
+
         await note.save();
         
     } catch (error) {

@@ -58,8 +58,9 @@ export const signin = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await User.findById(userId);
+    if(!userId) return res.status(200).json({message: "No user is logged in"})
 
+    const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json({ user });
